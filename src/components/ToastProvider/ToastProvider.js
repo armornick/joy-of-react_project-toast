@@ -1,4 +1,4 @@
-import React, { useState, createContext, useCallback } from "react";
+import React, { useState, createContext, useCallback, useEffect } from "react";
 
 export const ToastContext = createContext();
 
@@ -18,8 +18,27 @@ function ToastProvider({ children }) {
     setToasts(toasts.filter((toast) => toast.id !== toastId));
   });
 
+  const removeAllToasts = useCallback(() => {
+    setToasts([]);
+  });
+
+  useEffect(() => {
+    const onKeyUp = (/** @type {KeyboardEvent} */ e) => {
+      if (e.code === "Escape") {
+        removeAllToasts();
+      }
+    };
+
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, []);
+
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
+    <ToastContext.Provider
+      value={{ toasts, addToast, removeToast, removeAllToasts }}
+    >
       {children}
     </ToastContext.Provider>
   );

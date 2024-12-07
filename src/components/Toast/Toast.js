@@ -18,12 +18,7 @@ const ICONS_BY_VARIANT = {
   error: AlertOctagon,
 };
 
-function Toast({
-  variant = "notice",
-  message,
-  onDismiss,
-  dismissMessage = "Dismiss",
-}) {
+function Toast({ variant = "notice", message, onDismiss }) {
   if (!ICONS_BY_VARIANT[variant]) {
     throw new Error(
       `unrecognized variant: ${variant}. (expected: ${Object.keys(
@@ -39,10 +34,17 @@ function Toast({
       <div className={styles.iconContainer}>
         <Icon size={24} />
       </div>
-      <p className={styles.content}>{message}</p>
-      <button className={styles.closeButton} onClick={onDismiss}>
+      <p className={styles.content}>
+        <VisuallyHidden>{variant}</VisuallyHidden>
+        {message}
+      </p>
+      <button
+        className={styles.closeButton}
+        aria-label="Dismiss message"
+        aria-live="off"
+        onClick={onDismiss}
+      >
         <X size={24} />
-        <VisuallyHidden>{dismissMessage}</VisuallyHidden>
       </button>
     </div>
   );
