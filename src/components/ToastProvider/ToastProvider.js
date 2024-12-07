@@ -1,39 +1,37 @@
-import React, { useState, createContext, useCallback, useEffect } from "react";
+import React, { useState, createContext, useCallback } from "react";
+import { useEscapeKey } from "../../hooks/use-keydown";
 
 export const ToastContext = createContext();
 
 function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = useCallback(({ variant, message }) => {
-    const newToast = {
-      id: `${Date.now()}~${Math.random()}`,
-      variant,
-      message,
-    };
-    setToasts([...toasts, newToast]);
-  });
+  const addToast = useCallback(
+    ({ variant, message }) => {
+      const newToast = {
+        id: `${Date.now()}~${Math.random()}`,
+        variant,
+        message,
+      };
+      setToasts([...toasts, newToast]);
+    },
+    [toasts]
+  );
 
-  const removeToast = useCallback((toastId) => {
-    setToasts(toasts.filter((toast) => toast.id !== toastId));
-  });
+  const removeToast = useCallback(
+    (toastId) => {
+      setToasts(toasts.filter((toast) => toast.id !== toastId));
+    },
+    [toasts]
+  );
 
   const removeAllToasts = useCallback(() => {
     setToasts([]);
-  });
-
-  useEffect(() => {
-    const onKeyUp = (/** @type {KeyboardEvent} */ e) => {
-      if (e.code === "Escape") {
-        removeAllToasts();
-      }
-    };
-
-    window.addEventListener("keyup", onKeyUp);
-    return () => {
-      window.removeEventListener("keyup", onKeyUp);
-    };
   }, []);
+
+  useEscapeKey(() => {
+    removeAllToasts();
+  });
 
   return (
     <ToastContext.Provider
